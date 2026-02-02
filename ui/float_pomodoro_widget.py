@@ -80,12 +80,45 @@ class FloatPomodoroWidget(QDialog):
             }
         """
 
+        # Pin button - different styles for pinned/unpinned state
+        self.pin_style_unchecked = """
+            QPushButton {
+                font-size: 11px;
+                text-align: center;
+                border: 1px solid #DDD;
+                border-radius: 3px;
+                min-width: 28px;
+                padding: 2px 6px;
+                color: #666;
+            }
+            QPushButton:hover {
+                border-color: #7C4DFF;
+                background-color: #F5F0FF;
+            }
+        """
+        self.pin_style_checked = """
+            QPushButton {
+                font-size: 11px;
+                text-align: center;
+                border: 1px solid #7C4DFF;
+                border-radius: 3px;
+                min-width: 28px;
+                padding: 2px 6px;
+                background-color: #7C4DFF;
+                color: white;
+            }
+            QPushButton:hover {
+                border-color: #651FFF;
+                background-color: #651FFF;
+            }
+        """
+
         self.pin_btn = QPushButton("T")
         self.pin_btn.setFixedSize(32, 24)
         self.pin_btn.setCheckable(True)
         self.pin_btn.setChecked(True)
         self.pin_btn.setToolTip("取消置顶")
-        self.pin_btn.setStyleSheet(btn_style)
+        self.pin_btn.setStyleSheet(self.pin_style_checked)
         self.pin_btn.clicked.connect(self._on_toggle_pin)
         top_bar_layout.addWidget(self.pin_btn)
 
@@ -313,12 +346,19 @@ class FloatPomodoroWidget(QDialog):
 
     def _on_toggle_pin(self, checked):
         """Toggle always on top."""
+        # Check if flag is already in correct state to avoid unnecessary recreation
+        has_flag = self.windowFlags() & Qt.WindowType.WindowStaysOnTopHint
+        if checked == has_flag:
+            return
+
         if checked:
             self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
             self.pin_btn.setToolTip("取消置顶")
+            self.pin_btn.setStyleSheet(self.pin_style_checked)
         else:
             self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowStaysOnTopHint)
             self.pin_btn.setToolTip("置顶")
+            self.pin_btn.setStyleSheet(self.pin_style_unchecked)
         self.show()
 
     def eventFilter(self, obj, event):
