@@ -1,30 +1,23 @@
 """
-Todo list widget module.
+Compact and clean styles for Todo list widget.
 """
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QListWidget,
                              QListWidgetItem, QLabel, QPushButton, QLineEdit,
-                             QComboBox, QFrame, QTextEdit, QMessageBox, QInputDialog)
+                             QComboBox, QMessageBox, QInputDialog, QFrame)
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QColor, QBrush
 
 from core.todo_manager import TaskManager, Task
 
 
 class TodoWidget(QWidget):
-    """Todo list widget."""
+    """Compact Todo list widget."""
 
     # Signals
-    task_selected = pyqtSignal(int)  # task_id
+    task_selected = pyqtSignal(int)
     task_changed = pyqtSignal()
 
     def __init__(self, db=None, parent=None):
-        """
-        Initialize todo widget.
-
-        Args:
-            db: Database instance
-            parent: Parent widget
-        """
+        """Initialize todo widget."""
         super().__init__(parent)
         self.db = db
         self.task_manager = TaskManager(db) if db else None
@@ -35,92 +28,92 @@ class TodoWidget(QWidget):
     def _init_ui(self):
         """Initialize UI components."""
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
-        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(6)
+        layout.setContentsMargins(12, 12, 12, 12)
 
-        # Title
-        title_layout = QHBoxLayout()
+        # Header
+        header_layout = QHBoxLayout()
 
         title_label = QLabel("待办事项")
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold;")
-        title_layout.addWidget(title_label)
+        title_label.setObjectName("sectionTitle")
+        header_layout.addWidget(title_label)
 
-        title_layout.addStretch()
+        header_layout.addStretch()
 
-        # Theme toggle
-        self.theme_button = QPushButton("深色")
-        self.theme_button.setFixedWidth(60)
-        self.theme_button.clicked.connect(self._on_theme_toggle)
-        title_layout.addWidget(self.theme_button)
-
-        layout.addLayout(title_layout)
-
-        # Filter and search
-        filter_layout = QHBoxLayout()
-
+        # Filter
         self.filter_combo = QComboBox()
         self.filter_combo.addItems(["全部", "待办", "进行中", "已完成"])
+        self.filter_combo.setFixedWidth(80)
         self.filter_combo.currentIndexChanged.connect(self._on_filter_changed)
-        filter_layout.addWidget(self.filter_combo)
+        header_layout.addWidget(self.filter_combo)
 
-        filter_layout.addStretch()
-
-        layout.addLayout(filter_layout)
+        layout.addLayout(header_layout)
 
         # Task list
         self.task_list = QListWidget()
         self.task_list.setObjectName("taskList")
+        self.task_list.setSpacing(2)
         self.task_list.itemClicked.connect(self._on_task_clicked)
         self.task_list.itemDoubleClicked.connect(self._on_task_double_clicked)
         layout.addWidget(self.task_list)
 
-        # Add task section
-        add_frame = QFrame()
-        add_frame.setObjectName("addFrame")
-        add_layout = QVBoxLayout(add_frame)
-        add_layout.setSpacing(8)
+        # Add task row - compact
+        add_layout = QHBoxLayout()
+        add_layout.setSpacing(6)
 
         self.title_input = QLineEdit()
-        self.title_input.setPlaceholderText("输入任务标题...")
+        self.title_input.setPlaceholderText("添加任务...")
+        self.title_input.setFixedHeight(32)
         self.title_input.returnPressed.connect(self._on_add_task)
         add_layout.addWidget(self.title_input)
 
-        # Priority and add button
-        priority_layout = QHBoxLayout()
-
         self.priority_combo = QComboBox()
-        self.priority_combo.addItems(["高优先级", "中优先级", "低优先级"])
+        self.priority_combo.addItems(["高", "中", "低"])
+        self.priority_combo.setFixedWidth(55)
         self.priority_combo.setCurrentIndex(1)
-        priority_layout.addWidget(self.priority_combo)
+        add_layout.addWidget(self.priority_combo)
 
-        priority_layout.addStretch()
-
-        self.add_button = QPushButton("添加任务")
+        self.add_button = QPushButton("添加")
         self.add_button.setObjectName("addButton")
+        self.add_button.setProperty("class", "primary")
+        self.add_button.setFixedSize(50, 32)
         self.add_button.clicked.connect(self._on_add_task)
-        priority_layout.addWidget(self.add_button)
+        add_layout.addWidget(self.add_button)
 
-        add_layout.addLayout(priority_layout)
-        layout.addWidget(add_frame)
+        layout.addLayout(add_layout)
 
-        # Task actions
+        # Action buttons
         action_layout = QHBoxLayout()
-        action_layout.setSpacing(8)
+        action_layout.setSpacing(6)
 
         self.start_button = QPushButton("开始任务")
+        self.start_button.setObjectName("startButton")
+        self.start_button.setProperty("class", "success")
+        self.start_button.setFixedSize(70, 28)
         self.start_button.setEnabled(False)
         self.start_button.clicked.connect(self._on_start_task)
         action_layout.addWidget(self.start_button)
 
-        self.complete_button = QPushButton("完成")
+        self.complete_button = QPushButton("完成任务")
+        self.complete_button.setObjectName("completeButton")
+        self.complete_button.setFixedSize(70, 28)
         self.complete_button.setEnabled(False)
         self.complete_button.clicked.connect(self._on_complete_task)
         action_layout.addWidget(self.complete_button)
 
         self.delete_button = QPushButton("删除")
+        self.delete_button.setObjectName("deleteButton")
+        self.delete_button.setFixedSize(50, 28)
         self.delete_button.setEnabled(False)
         self.delete_button.clicked.connect(self._on_delete_task)
         action_layout.addWidget(self.delete_button)
+
+        action_layout.addStretch()
+
+        # Task count on right
+        self.task_count_label = QLabel("0 个任务")
+        self.task_count_label.setObjectName("taskCount")
+        action_layout.addWidget(self.task_count_label)
 
         layout.addLayout(action_layout)
 
@@ -137,6 +130,9 @@ class TodoWidget(QWidget):
         else:
             tasks = self.task_manager.get_tasks_by_status(filter_status) if self.task_manager else []
 
+        # Update task count
+        self.task_count_label.setText(f"{len(tasks)} 个任务")
+
         for task in tasks:
             self._add_task_item(task)
 
@@ -146,42 +142,37 @@ class TodoWidget(QWidget):
         item.setData(Qt.ItemDataRole.UserRole, task.id)
 
         # Create widget for item
-        widget = self._create_task_widget(task)
-        item.setSizeHint(widget.sizeHint())
+        widget = QFrame()
+        widget.setObjectName("taskItem")
+        widget.setMinimumHeight(42)
+        layout = QVBoxLayout(widget)
+        layout.setContentsMargins(10, 6, 10, 6)
+        layout.setSpacing(2)
 
-        self.task_list.addItem(item)
-        self.task_list.setItemWidget(item, widget)
-
-    def _create_task_widget(self, task: Task) -> QFrame:
-        """Create a widget for displaying task."""
-        frame = QFrame()
-        frame.setObjectName("taskItem")
-
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(4)
-
-        # Title and priority
-        title_layout = QHBoxLayout()
-
+        # Title
         title_label = QLabel(task.title)
+        title_label.setObjectName("taskTitle")
         title_label.setWordWrap(True)
-        title_layout.addWidget(title_label)
+        top_layout = QHBoxLayout()
+        top_layout.addWidget(title_label)
+        top_layout.addStretch()
 
-        title_layout.addStretch()
-
-        priority_label = QLabel(f"[{task.priority_label}]")
-        priority_label.setObjectName(f"priority{task.priority}")
-        title_layout.addWidget(priority_label)
-
-        layout.addLayout(title_layout)
+        # Priority
+        priority_class = {1: "priority-high", 2: "priority-medium", 3: "priority-low"}
+        priority_label = QLabel(task.priority_label)
+        priority_label.setProperty("class", priority_class.get(task.priority, "priority-medium"))
+        top_layout.addWidget(priority_label)
+        layout.addLayout(top_layout)
 
         # Status
+        status_class = {0: "status-pending", 1: "status-progress", 2: "status-completed"}
         status_label = QLabel(task.status_label)
-        status_label.setObjectName(f"status{task.status}")
-        status_label.setStyleSheet("font-size: 12px;")
+        status_label.setProperty("class", f"status-badge {status_class.get(task.status, 'status-pending')}")
         layout.addWidget(status_label)
 
-        return frame
+        item.setSizeHint(widget.sizeHint())
+        self.task_list.addItem(item)
+        self.task_list.setItemWidget(item, widget)
 
     def _on_filter_changed(self):
         """Handle filter change."""
@@ -193,7 +184,6 @@ class TodoWidget(QWidget):
         self.current_task_id = task_id
         self.task_selected.emit(task_id)
 
-        # Update button states
         task = self.task_manager.get_task(task_id) if self.task_manager else None
         if task:
             self.start_button.setEnabled(task.status != 2)
@@ -205,17 +195,13 @@ class TodoWidget(QWidget):
         task_id = item.data(Qt.ItemDataRole.UserRole)
         task = self.task_manager.get_task(task_id) if self.task_manager else None
         if task:
-            self._edit_task(task)
-
-    def _edit_task(self, task: Task):
-        """Edit a task."""
-        new_title, ok = QInputDialog.getText(
-            self, "编辑任务", "任务标题:", QLineEdit.EchoMode.Normal, task.title
-        )
-        if ok and new_title.strip():
-            self.task_manager.update_task(task.id, title=new_title.strip())
-            self._load_tasks()
-            self.task_changed.emit()
+            new_title, ok = QInputDialog.getText(
+                self, "编辑任务", "任务标题:", QLineEdit.EchoMode.Normal, task.title
+            )
+            if ok and new_title.strip():
+                self.task_manager.update_task(task.id, title=new_title.strip())
+                self._load_tasks()
+                self.task_changed.emit()
 
     def _on_add_task(self):
         """Handle add task."""
@@ -223,7 +209,7 @@ class TodoWidget(QWidget):
         if not title:
             return
 
-        priority = self.priority_combo.currentIndex() + 1  # 1, 2, or 3
+        priority = self.priority_combo.currentIndex() + 1
 
         if self.task_manager:
             self.task_manager.create_task(title, priority=priority)
@@ -260,13 +246,6 @@ class TodoWidget(QWidget):
                 self.delete_button.setEnabled(False)
                 self._load_tasks()
                 self.task_changed.emit()
-
-    def _on_theme_toggle(self):
-        """Toggle theme."""
-        self.theme_button.setText("浅色" if self.theme_button.text() == "深色" else "深色")
-        # Emit signal to parent for theme change
-        from PyQt6.QtCore import QEvent
-        self.window().toggle_theme()
 
     def refresh(self):
         """Refresh the task list."""

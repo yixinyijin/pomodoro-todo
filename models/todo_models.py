@@ -19,11 +19,11 @@ class TodoTask:
     @property
     def priority_label(self) -> str:
         """Get priority label."""
-        labels = {1: "High", 2: "Medium", 3: "Low"}
-        return labels.get(self.priority, "Medium")
+        labels = {1: "高", 2: "中", 3: "低"}
+        return labels.get(self.priority, "中")
 
     @property
     def status_label(self) -> str:
         """Get status label."""
-        labels = {0: "Pending", 1: "In Progress", 2: "Completed"}
-        return labels.get(self.status, "Pending")
+        labels = {0: "待办", 1: "进行中", 2: "已完成"}
+        return labels.get(self.status, "待办")

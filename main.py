@@ -11,6 +11,11 @@ from ui.main_window import MainWindow
 
 def main():
     """Application entry point."""
+    # Enable high DPI scaling BEFORE creating QApplication
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
 
@@ -18,9 +23,6 @@ def main():
     app.setApplicationName("番茄时钟 + TodoList")
     app.setApplicationVersion("1.0.0")
     app.setOrganizationName("PomodoroTodo")
-
-    # Enable high DPI scaling
-    app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
     # Create and show main window
     window = MainWindow()
