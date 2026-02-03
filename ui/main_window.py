@@ -92,6 +92,10 @@ class MainWindow(QMainWindow):
         # Help menu
         help_menu = menu_bar.addMenu("帮助")
 
+        check_update_action = QAction("检查更新", self)
+        check_update_action.triggered.connect(self._on_check_update)
+        help_menu.addAction(check_update_action)
+
         about_action = QAction("关于", self)
         about_action.triggered.connect(self._on_about)
         help_menu.addAction(about_action)
@@ -155,6 +159,16 @@ class MainWindow(QMainWindow):
         """Handle task change."""
         if self._float_pomodoro:
             self._float_pomodoro._update_stats()
+
+    def _on_check_update(self):
+        """检查更新"""
+        from ui.update_dialog import UpdateCheckDialog
+        dialog = UpdateCheckDialog(self)
+        # 应用当前主题
+        from ui.styles import get_stylesheet, LIGHT_THEME, DARK_THEME
+        theme = DARK_THEME if self.is_dark_theme else LIGHT_THEME
+        dialog.setStyleSheet(get_stylesheet(theme))
+        dialog.exec()
 
     def _on_about(self):
         """Show about dialog."""

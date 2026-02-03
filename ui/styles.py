@@ -55,6 +55,11 @@ def get_stylesheet(theme: dict = None) -> str:
         border-radius: 10px;
     }}
 
+    /* 任务项 widget - 透明，让 QListWidget::item 的背景显示 */
+    #taskItem {{
+        background-color: transparent;
+    }}
+
     /* 标题 */
     #sectionTitle {{
         font-size: 15px;
@@ -153,9 +158,10 @@ def get_stylesheet(theme: dict = None) -> str:
     QListWidget::item {{
         background-color: {theme['surface']};
         border: 1px solid {theme['border']};
-        border-radius: 4px;
-        padding: 6px;
-        margin-bottom: 4px;
+        border-radius: 8px;
+        padding: 0px;
+        margin-bottom: 8px;
+        min-height: 80px;
     }}
 
     QListWidget::item:hover:!selected {{
@@ -172,7 +178,7 @@ def get_stylesheet(theme: dict = None) -> str:
 
     /* 任务标题 */
     #taskTitle {{
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
     }}
 

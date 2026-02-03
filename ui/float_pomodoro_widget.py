@@ -434,21 +434,23 @@ class FloatPomodoroWidget(QDialog):
 
         self.pomodoro_completed.emit(duration)
 
-        self.start_button.setEnabled(True)
-        self.start_button.setText("开始")
-        self.pause_button.setEnabled(False)
-        self.pause_button.setText("暂停")
-
         if self.pomodoro_timer.state == PomodoroState.WORKING:
             self.status_label.setText("工作完成！开始休息吧")
             self.short_break_btn.setChecked(True)
+            self.work_btn.setChecked(False)
+            self.long_break_btn.setChecked(False)
             short = self._short_break
             self.timer_display.setText(f"{short:02d}:00")
         else:
             self.status_label.setText("休息完成！开始工作吧")
             self.work_btn.setChecked(True)
+            self.short_break_btn.setChecked(False)
+            self.long_break_btn.setChecked(False)
             work = self._work_duration
             self.timer_display.setText(f"{work:02d}:00")
+
+        # 同步更新所有按钮状态
+        self._update_control_buttons()
 
     def _get_status_text(self):
         state = self.pomodoro_timer.state

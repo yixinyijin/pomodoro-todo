@@ -4,7 +4,7 @@ Compact and clean styles for Todo list widget.
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QListWidget,
                              QListWidgetItem, QLabel, QPushButton, QLineEdit,
                              QComboBox, QMessageBox, QInputDialog, QFrame)
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QSize
 
 from core.todo_manager import TaskManager, Task
 
@@ -144,10 +144,10 @@ class TodoWidget(QWidget):
         # Create widget for item
         widget = QFrame()
         widget.setObjectName("taskItem")
-        widget.setMinimumHeight(42)
+        widget.setFixedHeight(80)
         layout = QVBoxLayout(widget)
-        layout.setContentsMargins(10, 6, 10, 6)
-        layout.setSpacing(2)
+        layout.setContentsMargins(14, 8, 14, 8)
+        layout.setSpacing(4)
 
         # Title
         title_label = QLabel(task.title)
@@ -170,7 +170,7 @@ class TodoWidget(QWidget):
         status_label.setProperty("class", f"status-badge {status_class.get(task.status, 'status-pending')}")
         layout.addWidget(status_label)
 
-        item.setSizeHint(widget.sizeHint())
+        item.setSizeHint(QSize(0, 80))
         self.task_list.addItem(item)
         self.task_list.setItemWidget(item, widget)
 
